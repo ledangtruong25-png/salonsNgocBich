@@ -1,0 +1,5 @@
+import Link from 'next/link';
+import { Scissors, ArrowUpRight, Check } from 'lucide-react';
+export function AuthShell({ children }: { children: React.ReactNode }) {
+  return <main className="auth-page"><section className="auth-story"><Link href="/" className="brand"><span className="brand-mark"><Scissors size={24}/></span><span>salon<span className="brand-light">manager</span></span></Link><div className="story-copy"><span className="eyebrow">KHÔNG GIAN QUẢN LÝ CỦA BẠN</span><h1>Chăm chút cho khách.<br/><em>Gọn gàng việc salon.</em></h1><p>Một nơi để bắt đầu quản lý salon theo cách đơn giản, rõ ràng và có tổ chức.</p><div className="story-points"><span><Check size={17}/>Kết nối Supabase</span><span><Check size={17}/>Phân quyền theo vai trò</span></div></div><div className="story-bottom"><span>Nền tảng chạy thử · v0.1.0</span><Link href="/demo">Khám phá giao diện <ArrowUpRight size={15}/></Link></div><div className="orb orb-one"/><div className="orb orb-two"/></section><section className="auth-content">{children}<p className="auth-footnote">Salon Manager v0.1.0 · Dành cho kiểm tra và trải nghiệm</p></section></main>;
+}

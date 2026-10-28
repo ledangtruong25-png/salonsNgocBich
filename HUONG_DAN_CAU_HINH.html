@@ -1,0 +1,445 @@
+<!doctype html><html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Hướng dẫn cấu hình Salon Manager v0.1.0</title><style>*{box-sizing:border-box}body{margin:0;background:#f5f7f2;color:#263526;font:15px/1.7 Arial,sans-serif}main{max-width:1020px;margin:35px auto;background:#fff;border:1px solid #dfe7d9;border-radius:16px;padding:45px 55px}h1{font-size:32px;line-height:1.3}h2{font-size:23px;margin-top:45px;padding-top:12px}h3{font-size:18px;margin-top:28px}a{color:#2d6847}p,li{color:#4c5e4b}pre{background:#f1f5ed;padding:18px;border-radius:8px;overflow:auto;font-size:13px;line-height:1.7}code{font-size:13px;background:#f1f5ed;padding:2px 4px;border-radius:4px}pre code{padding:0;background:none}table{border-collapse:collapse;width:100%;display:block;overflow:auto;margin:20px 0;font-size:13px}th{background:#eaf1e4}td,th{border:1px solid #d9e3d3;padding:11px 14px;vertical-align:top;text-align:left}blockquote{margin:20px 0;padding-left:18px;border-left:3px solid #6f9164}li{margin:9px 0}hr{border:0;border-top:1px solid #e1e8dc}@media(max-width:700px){main{margin:0;padding:25px 20px;border:0;border-radius:0}h1{font-size:27px}}@media print{body{background:white}main{border:0;padding:0;margin:0;max-width:none}h2,h3{break-after:avoid}pre,tr{break-inside:avoid}}</style></head><body><main><h1>Salon Manager v0.1.0</h1>
+<p>Web app quản lý salon tóc ở giai đoạn <strong>nền tảng chạy thử</strong>, dùng <strong>Vercel Hobby (Free)</strong> và <strong>Supabase Free</strong>. Source đã có cấu hình deploy, không cần mua tên miền, không yêu cầu secret key hoặc dịch vụ trả phí.</p>
+<p><strong>Bắt đầu nhanh:</strong> tạo project Supabase → chạy migration → tạo tài khoản chủ → chạy bootstrap mẫu → đưa source lên GitHub → import vào Vercel → khai báo 3 biến môi trường → đăng nhập và kiểm tra.</p>
+<blockquote>
+<p>ZIP là source triển khai. Để đăng nhập và đọc database thật, cần cấu hình Supabase của Sếp theo các bước dưới đây. Không có tài khoản hoặc mật khẩu dùng chung được cài sẵn. Không cấu hình vẫn xem được <code>/demo</code> và <code>/setup</code>.</p>
+</blockquote>
+<h2>1. Bản này có gì</h2>
+<table>
+<thead>
+<tr>
+<th>Chức năng</th>
+<th>Trạng thái</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Giao diện tiếng Việt responsive</td>
+<td>Có</td>
+</tr>
+<tr>
+<td>Đăng nhập, đăng xuất, phiên bằng Supabase Auth</td>
+<td>Có, sau khi cấu hình</td>
+</tr>
+<tr>
+<td>Quên mật khẩu và đặt lại mật khẩu</td>
+<td>Có, cần URL/email template hợp lệ; giới hạn email của Supabase áp dụng</td>
+</tr>
+<tr>
+<td>Chủ salon và thu ngân</td>
+<td>Có; RLS kiểm tra quyền tại database</td>
+</tr>
+<tr>
+<td>Đơn mẫu, khách mẫu, bảng dịch vụ mẫu</td>
+<td>Chỉ xem, tìm kiếm, lọc và xem chi tiết</td>
+</tr>
+<tr>
+<td>Chủ salon sửa tên, điện thoại, địa chỉ salon</td>
+<td>Lưu thật vào Supabase</td>
+</tr>
+<tr>
+<td>Chủ salon xem danh sách thành viên</td>
+<td>Có; cấp/tắt quyền qua Supabase Dashboard</td>
+</tr>
+<tr>
+<td>Xem giao diện trước khi có database</td>
+<td><code>/demo</code>, ghi nhãn mẫu, không đăng nhập và không lưu</td>
+</tr>
+<tr>
+<td>Tạo đơn, thu tiền, in hóa đơn, báo cáo vận hành, cài PWA</td>
+<td>Chưa có; phạm vi v1.0.0</td>
+</tr>
+</tbody></table>
+<p>Dữ liệu demo gồm 6 khách giả lập không có điện thoại thật, 6 dịch vụ giá minh họa, 8 đơn mẫu ngày 28/10/2026. Chỉ số dashboard là số liệu mẫu: 7 lượt không hủy, 2 đơn đang phục vụ, tổng giá trị 5 đơn hoàn tất 2.520.000đ. Chưa có khoản thanh toán hay doanh thu kinh doanh được ghi nhận.</p>
+<h2>2. Công nghệ và yêu cầu máy</h2>
+<ul>
+<li>Node.js <strong>24.x</strong>, npm đi kèm. Kiểm tra bằng <code>node -v</code> và <code>npm -v</code>.</li>
+<li>Next.js <strong>16.4.3</strong>, React/React DOM <strong>19.3.1</strong>, TypeScript <strong>7.0.2</strong>.</li>
+<li><code>@supabase/supabase-js</code> <strong>2.118.0</strong>, <code>@supabase/ssr</code> <strong>0.12.7</strong>; khóa phiên bản trong lockfile.</li>
+<li>Supabase PostgreSQL và Auth; server xác thực người dùng bằng <code>getUser</code>, truy vấn theo JWT người dùng; không dùng service_role để đọc dữ liệu ứng dụng.</li>
+<li>Vercel preset Next.js, runtime Node 24.x; cấu hình <code>vercel.json</code> đã kèm.</li>
+<li>Cài dependency bằng <code>npm ci</code>, không cần nâng cấp toàn bộ thư viện.</li>
+</ul>
+<p>Kiểm tra phiên bản package thực tế bằng <code>npm ls --depth=0</code>. Nếu tên mục trong Dashboard thay đổi, dùng mục chức năng tương đương được mô tả.</p>
+<h2>3. Giới hạn Free cần biết</h2>
+<ul>
+<li>Vercel Hobby dành cho <strong>cá nhân phi thương mại</strong>. Bản này dùng để trải nghiệm và kiểm tra; khi vận hành salon thương mại, kiểm tra lại điều khoản và chọn gói phù hợp. Không có thao tác tự nâng cấp hoặc tính phí trong source.</li>
+<li>Supabase Free có hạn mức database, lưu trữ, kết nối, email và lưu lượng. Project có thể tạm dừng khi ít hoạt động trong 7 ngày. Mở project trong Dashboard và chọn <strong>Resume project</strong> nếu bị pause.</li>
+<li>Không dùng tác vụ tạo lưu lượng giả để giữ project luôn bật. Theo dõi usage tại Dashboard.</li>
+<li>Free không có cùng cơ chế backup tự động như Pro; tự xuất dữ liệu nếu cần giữ. Dữ liệu mẫu có thể nạp lại bằng script, còn thông tin salon đã sửa và tài khoản cần được bảo quản riêng.</li>
+<li>Gửi email mặc định có giới hạn người nhận và tần suất. Để thử đăng nhập không cần gửi email: dùng <strong>Create user + Auto Confirm User</strong> theo hướng dẫn bên dưới.</li>
+</ul>
+<p>Nguồn chính thức: <a href="https://vercel.com/docs/plans/hobby">Vercel Hobby</a>, <a href="https://supabase.com/pricing">Supabase pricing</a>, <a href="https://supabase.com/docs/guides/platform/free-project-pausing">Project pausing</a>.</p>
+<h2>4. Tạo Supabase Free</h2>
+<ol>
+<li>Mở <a href="https://supabase.com/dashboard">https://supabase.com/dashboard</a> và đăng nhập.</li>
+<li>Tạo organization <strong>Free</strong> nếu chưa có. Chọn <strong>New project</strong>.</li>
+<li>Đặt tên, ví dụ <code>salon-manager-test</code>. Dùng <strong>project mới, trống</strong> cho bộ SQL này; không chạy vào database đang có dữ liệu kinh doanh hoặc bảng trùng tên.</li>
+<li>Đặt mật khẩu database mạnh và lưu riêng. Mật khẩu này <strong>không phải</strong> mật khẩu tài khoản đăng nhập app.</li>
+<li>Chọn region gần Việt Nam (ví dụ Singapore nếu có), chờ project sẵn sàng.</li>
+<li>Authentication → <strong>Sign In / Providers</strong> (hoặc phần cấu hình Email): bật đăng nhập Email, tắt <strong>Allow new users to sign up</strong>. Không mở đăng ký công khai.</li>
+<li>Không cần bật Realtime, Storage, social login hoặc tạo bucket cho v0.1.0.</li>
+</ol>
+<h2>5. Tạo database</h2>
+<p>Trong Supabase project → <strong>SQL Editor</strong> → <strong>New query</strong>:</p>
+<ol>
+<li>Mở file <code>supabase/migrations/202610280001_foundation.sql</code> trong source.</li>
+<li>Copy <strong>toàn bộ</strong> nội dung, dán vào SQL Editor và bấm <strong>Run</strong>.</li>
+<li>Kết quả mong đợi: query thành công; Table Editor có <code>salons</code>, <code>profiles</code>, <code>salon_members</code>, <code>customers</code>, <code>catalog_items</code>, <code>orders</code>. RLS đã bật cho tất cả 6 bảng.</li>
+</ol>
+<p>Migration chỉ chạy <strong>một lần</strong> cho project mới. Nếu báo <code>relation already exists</code>, kiểm tra Table Editor và lịch sử chạy trước; không xóa bảng hoặc chạy lại tùy tiện. Script có transaction nên nếu lỗi giữa chừng sẽ rollback phần migration đó.</p>
+<p>Ứng dụng chỉ có quyền đọc dữ liệu mẫu; chủ salon được cập nhật 3 cột thông tin salon. Trình duyệt không thể ghi trực tiếp role, đơn hoặc khoản thu. Schema <code>private</code> chứa helper RLS và không cần thêm vào Exposed schemas của Data API.</p>
+<h2>6. Tạo tài khoản chủ và nạp mẫu</h2>
+<h3>6.1 Tạo tài khoản xác nhận trực tiếp</h3>
+<ol>
+<li>Authentication → <strong>Users</strong> → <strong>Add user</strong> → <strong>Create user</strong>.</li>
+<li>Điền email thật do Sếp quản lý và mật khẩu riêng <strong>ít nhất 12 ký tự</strong>.</li>
+<li>Bật <strong>Auto Confirm User</strong> hoặc tùy chọn xác nhận email trực tiếp rồi tạo.</li>
+<li>Có user trong danh sách là đúng. Bước này tạo tài khoản Auth; bước tiếp theo mới cấp quyền chủ salon.</li>
+</ol>
+<p>Không cần mời bằng email để thử bản này. Không đưa mật khẩu vào file SQL, GitHub, ZIP hoặc ảnh chụp.</p>
+<h3>6.2 Cấp quyền chủ và tạo dữ liệu mẫu</h3>
+<ol>
+<li>Mở file <code>supabase/01_bootstrap_demo.sql</code>.</li>
+<li>Tìm dòng <code>owner_email text := &#39;THAY_EMAIL_CHU_SALON&#39;;</code>.</li>
+<li>Chỉ thay <code>THAY_EMAIL_CHU_SALON</code> bằng email user đã tạo, giữ nguyên dấu nháy đơn. Có thể sửa <code>owner_name</code> thành tên hiển thị của Sếp.</li>
+<li>Copy toàn bộ file đã thay email vào <strong>SQL Editor</strong> → Run.</li>
+<li>Kết quả mong đợi: salon tên <code>Mộc Hair Studio</code>, một thành viên owner active, 6 khách, 6 dịch vụ và 8 đơn mẫu.</li>
+</ol>
+<p>Có thể chạy thêm <code>supabase/03_verify_setup.sql</code> trong SQL Editor để xem số dòng mẫu, giá trị đơn mẫu, vai trò và trạng thái RLS. Đây là kiểm tra cài đặt bằng tài khoản quản trị, chưa thay cho đăng nhập từng vai trò trên app.</p>
+<p>Script có thể chạy lại với <strong>cùng chủ</strong> để thêm dữ liệu mẫu còn thiếu mà không nhân đôi dữ liệu hoặc ghi đè thông tin salon đã sửa. Không dùng bootstrap để đổi chủ hoặc mở lại chủ đã bị tắt quyền. Bản này giới hạn <strong>một salon trên một tài khoản</strong>.</p>
+<h2>7. Lấy đúng Project URL và API key</h2>
+<p>Trong project, mở nút <strong>Connect</strong> hoặc <strong>Settings → API Keys / Data API</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Biến</th>
+<th>Lấy ở đâu</th>
+<th>Phạm vi</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>NEXT_PUBLIC_SUPABASE_URL</code></td>
+<td>Project URL dạng <code>https://...supabase.co</code></td>
+<td>Thông tin kết nối công khai</td>
+</tr>
+<tr>
+<td><code>NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY</code></td>
+<td>Publishable key dạng <code>sb_publishable_...</code></td>
+<td>Khóa công khai, quyền dữ liệu do RLS kiểm soát</td>
+</tr>
+<tr>
+<td><code>NEXT_PUBLIC_APP_URL</code></td>
+<td>URL app local hoặc URL Vercel HTTPS cố định</td>
+<td>Tạo đường dẫn khôi phục mật khẩu</td>
+</tr>
+</tbody></table>
+<p>Project cũ có thể dùng <strong>anon key</strong> JWT thay publishable key. Điền vào cùng biến publishable key, hoặc dùng biến tương thích <code>NEXT_PUBLIC_SUPABASE_ANON_KEY</code> (chỉ chọn một). URL và key phải từ <strong>cùng project</strong>.</p>
+<p><strong>Không dùng</strong> <code>sb_secret_...</code>, key <code>service_role</code>, mật khẩu database, connection string PostgreSQL hoặc access token quản trị ở các biến <code>NEXT_PUBLIC_...</code>. Ứng dụng không yêu cầu bất cứ secret nào; cấu hình có định dạng khóa đặc quyền sẽ bị từ chối.</p>
+<h2>8. Chạy local trên máy Sếp</h2>
+<h3>Windows PowerShell</h3>
+<p>Giải nén ZIP, mở thư mục <code>SalonManager_v0.1.0</code>, bấm thanh địa chỉ File Explorer, gõ <code>powershell</code> rồi Enter. Chạy tại thư mục có <code>package.json</code>:</p>
+<pre><code class="language-powershell">node -v
+Copy-Item .env.example .env.local
+notepad .env.local
+</code></pre>
+<p>Điền URL/key Supabase thật và đặt <code>NEXT_PUBLIC_APP_URL=http://localhost:3000</code>, lưu rồi đóng Notepad. Tiếp tục:</p>
+<pre><code class="language-powershell">npm ci
+npm run doctor
+npm run dev
+</code></pre>
+<h3>macOS hoặc Linux</h3>
+<pre><code class="language-bash">cd SalonManager_v0.1.0
+cp .env.example .env.local
+# Sửa .env.local bằng trình soạn thảo, điền URL/key thật
+npm ci
+npm run doctor
+npm run dev
+</code></pre>
+<p>Mở <a href="http://localhost:3000">http://localhost:3000</a> → Đăng nhập bằng user chủ đã tạo. <code>npm run doctor</code> chỉ kiểm tra định dạng biến, không gọi Supabase và không in giá trị key. Nếu không có <code>.env.local</code>, app đưa tới <code>/setup</code>; <code>/demo</code> vẫn xem được nhưng không kết nối database.</p>
+<p>Khi sửa <code>.env.local</code>, dừng dev bằng Ctrl+C và chạy lại. Nếu cổng 3000 bận: <code>npm run dev -- --port 3001</code>, đồng thời đổi URL app và redirect tương ứng.</p>
+<h3>Kiểm tra build như Vercel</h3>
+<pre><code class="language-bash">npm run typecheck
+npm test
+npm run build
+npm run start
+</code></pre>
+<p><code>npm run build</code> vẫn thành công khi chưa có biến môi trường; kết nối database chỉ thực hiện lúc người dùng đăng nhập. Tests chạy PostgreSQL trong bộ nhớ bằng PGlite, không thay đổi project Supabase của Sếp. Dừng dev trước khi start production trên cùng cổng.</p>
+<h2>9. Đưa source lên GitHub</h2>
+<h3>Cách giao diện cho repo mới</h3>
+<ol>
+<li>Tạo <strong>private repository</strong> mới trên <a href="https://github.com/new">https://github.com/new</a>, ví dụ <code>salon-manager</code>.</li>
+<li>Vào <strong>Add file → Upload files</strong>. Giải nén ZIP trước; đưa <strong>các nội dung trong thư mục</strong> <code>SalonManager_v0.1.0</code> lên repo, không chỉ upload file ZIP.</li>
+<li><code>package.json</code>, <code>package-lock.json</code>, <code>src</code>, <code>scripts</code>, <code>supabase</code> và <code>vercel.json</code> phải nằm đúng cùng root repo.</li>
+<li>Bật hiển thị file ẩn khi cần để giữ <code>.gitignore</code>, <code>.env.example</code>, <code>.nvmrc</code>. Nếu uploader không nhận file ẩn, dùng Git theo cách bên dưới. <strong>Không upload <code>.env.local</code>, node_modules, .next, .vercel.</strong></li>
+<li>Commit bằng giao diện GitHub.</li>
+</ol>
+<h3>Cách Git cho repo mới và trống</h3>
+<p>Thay URL ví dụ bằng repo thật, chạy trong root source:</p>
+<pre><code class="language-bash">git init
+git add .
+git commit -m &quot;Salon Manager v0.1.0&quot;
+git branch -M main
+git remote add origin https://github.com/TEN_TAI_KHOAN/salon-manager.git
+git push -u origin main
+</code></pre>
+<p>Nếu Git yêu cầu tên/email, cấu hình theo tài khoản của Sếp. Nếu repo mới đã có README, clone repo đó trước rồi copy source vào và commit/push theo hướng dẫn repo có sẵn; không force push.</p>
+<h3>Repo có source sẵn hoặc lỗi fetch first</h3>
+<pre><code class="language-bash">git clone https://github.com/TEN_TAI_KHOAN/salon-manager.git
+cd salon-manager
+git fetch origin
+</code></pre>
+<p>Đọc source/branch hiện có rồi copy phần thay đổi phù hợp từ ZIP, giữ file ngoài phạm vi và <code>.git</code>. Với repo không dành riêng cho app này, dùng thư mục con hoặc branch riêng và đặt Root Directory đúng khi deploy. Commit sau khi tích hợp:</p>
+<pre><code class="language-bash">git add .
+git commit -m &quot;Add Salon Manager v0.1.0&quot;
+git pull --rebase origin main
+git push origin main
+</code></pre>
+<p>Nếu xung đột: sửa từng file, <code>git add</code>, <code>git rebase --continue</code>; nếu cần dừng, <code>git rebase --abort</code>. Không dùng <code>git push --force</code> để xử lý <code>fetch first</code>.</p>
+<h2>10. Deploy Vercel Free bằng GitHub</h2>
+<ol>
+<li>Mở <a href="https://vercel.com">https://vercel.com</a>, đăng nhập tài khoản cá nhân, sử dụng <strong>Hobby</strong>. Không chọn team Pro/trial hoặc add-on trả phí nếu chỉ muốn Free.</li>
+<li>Chọn <strong>Add New → Project</strong> (hoặc <a href="https://vercel.com/new">https://vercel.com/new</a>).</li>
+<li>Kết nối GitHub khi được yêu cầu, chỉ cấp quyền repo app cần deploy; chọn <strong>Import</strong> repo <code>salon-manager</code>.</li>
+<li>Kiểm tra cấu hình:</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>Mục</th>
+<th>Giá trị</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Framework Preset</td>
+<td>Next.js</td>
+</tr>
+<tr>
+<td>Root Directory</td>
+<td>Thư mục chứa <code>package.json</code>; repo chuẩn là <code>./</code></td>
+</tr>
+<tr>
+<td>Production Branch</td>
+<td><code>main</code> hoặc branch Sếp thực sự sử dụng</td>
+</tr>
+<tr>
+<td>Node.js Version</td>
+<td>24.x</td>
+</tr>
+<tr>
+<td>Install Command</td>
+<td><code>npm ci</code></td>
+</tr>
+<tr>
+<td>Build Command</td>
+<td><code>npm run build</code></td>
+</tr>
+<tr>
+<td>Output Directory</td>
+<td>Để mặc định của preset Next.js; không đặt <code>dist</code> hay <code>out</code></td>
+</tr>
+</tbody></table>
+<ol start="5">
+<li>Mở <strong>Environment Variables</strong>, thêm <code>NEXT_PUBLIC_SUPABASE_URL</code> và <code>NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY</code> đúng project. Nếu đã biết domain cố định, thêm <code>NEXT_PUBLIC_APP_URL=https://TEN_APP.vercel.app</code>. Nếu chưa biết, có thể để thiếu biến APP_URL ở lần deploy đầu và điền ngay sau bước 6.</li>
+<li>Bấm <strong>Deploy</strong>, đợi build thành công và mở URL được Vercel cấp. Dùng domain project cố định kiểu <code>ten-app.vercel.app</code>, không dùng link deployment thay đổi mỗi lần làm Site URL.</li>
+<li>Trong <strong>Settings → Environment Variables</strong>, đặt <code>NEXT_PUBLIC_APP_URL</code> bằng URL HTTPS thực tế không có path. Bật phạm vi <strong>Production</strong>. Nếu thử Preview cùng project, chọn phạm vi phù hợp và cấu hình URL chuyển hướng riêng.</li>
+<li>Sau khi sửa bất cứ biến <code>NEXT_PUBLIC_...</code> nào: <strong>Deployments → deployment mới nhất → Redeploy</strong>. Các biến này được đọc vào bundle khi build, đổi dashboard mà không redeploy chưa đủ.</li>
+<li>Trong Supabase → <strong>Authentication → URL Configuration</strong>:<ul>
+<li><strong>Site URL</strong> = <code>https://TEN_APP.vercel.app</code>.</li>
+<li><strong>Redirect URLs</strong> thêm chính xác:<ul>
+<li><code>https://TEN_APP.vercel.app/auth/callback</code></li>
+<li><code>https://TEN_APP.vercel.app/auth/callback?next=/update-password</code></li>
+<li><code>https://TEN_APP.vercel.app/update-password</code></li>
+<li>Nếu chạy local, thêm các đường dẫn tương tự với <code>http://localhost:3000</code>.</li>
+</ul>
+</li>
+<li>Tránh wildcard rộng cho URL production. Khi dùng Preview, khai báo domain preview cần dùng hoặc thử bằng production test URL cố định. Không trỏ preview vào dữ liệu kinh doanh.</li>
+</ul>
+</li>
+<li>Mở <code>/login</code>, đăng nhập bằng tài khoản chủ. Kiểm tra nhãn <strong>Đã kết nối Supabase</strong>, các dữ liệu mẫu và lưu thử tên salon.</li>
+</ol>
+<p><strong>Không cần thiết lập database URL hay PostgreSQL password trên Vercel.</strong> Source không lưu tệp bền vững trên filesystem Vercel; dữ liệu nằm ở Supabase.</p>
+<h3>Cách deploy không cần GitHub</h3>
+<p>Trong root source, đã có Node 24:</p>
+<pre><code class="language-bash">npx vercel@latest login
+npx vercel@latest
+</code></pre>
+<p>Làm theo prompt để tạo/link project cá nhân Hobby, không bật gói trả phí. Mở project Vercel Settings để nhập biến môi trường như trên, sau đó:</p>
+<pre><code class="language-bash">npx vercel@latest --prod
+</code></pre>
+<p>Sau deploy vẫn cần đặt Supabase Site URL/Redirect URLs và redeploy nếu đổi biến. Cách CLI <strong>không tự thiết lập auto deploy từ GitHub</strong>; muốn tự deploy sau mỗi push thì connect repo trong Vercel Settings → Git.</p>
+<h3>Deploy bản sau</h3>
+<p>Với GitHub đã kết nối, commit/push lên production branch sẽ tạo deployment mới. Với CLI, deploy lại bằng <code>npx vercel@latest --prod</code>. Kiểm tra build log và URL thật sau mỗi lần. Không xóa Supabase project để cập nhật giao diện.</p>
+<h2>11. Cấp tài khoản thu ngân và kiểm tra quyền</h2>
+<ol>
+<li>Authentication → Users → Add user → Create user. Dùng <strong>email khác</strong> với tài khoản chủ, mật khẩu riêng, Auto Confirm User.</li>
+<li>Mở <code>supabase/02_add_staff.sql</code>, thay <code>THAY_EMAIL_THU_NGAN</code> bằng email vừa tạo, sửa <code>staff_name</code> nếu muốn.</li>
+<li>Chạy file trong SQL Editor. Script không biến tài khoản owner thành cashier.</li>
+<li>Trong app, đăng xuất và đăng nhập thu ngân. Kết quả mong đợi: không có mục Đội ngũ, Cài đặt không cho sửa; vẫn đọc dữ liệu mẫu salon.</li>
+<li>Tắt quyền: Table Editor → <code>salon_members</code> → dòng đúng <code>user_id</code> → <code>active=false</code>. Tải lại app; tài khoản sẽ không được đọc dữ liệu salon nữa ngay cả khi còn phiên Auth. Đừng tắt user chủ duy nhất khi chưa có cách quản trị project.</li>
+<li>Đổi tên hiển thị bằng <code>profiles.full_name</code> trong Table Editor. Cấp/tắt quyền chỉ thao tác bằng tài khoản quản trị Supabase project; không chia sẻ quyền project với thu ngân.</li>
+</ol>
+<h2>12. Cấu hình quên mật khẩu</h2>
+<p>Đăng nhập trực tiếp bằng user xác nhận tay không phụ thuộc chức năng này. Để kiểm tra luồng email:</p>
+<ol>
+<li>Hoàn tất Site URL và Redirect URLs ở mục 10. <code>NEXT_PUBLIC_APP_URL</code> phải đúng URL app.</li>
+<li>Trong Supabase <strong>Authentication → Email → Templates → Reset Password</strong>, đổi đường dẫn nút đặt lại thành:</li>
+</ol>
+<pre><code class="language-html">&lt;a href=&quot;{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&amp;type=recovery&quot;&gt;Đặt lại mật khẩu&lt;/a&gt;
+</code></pre>
+<ol start="3">
+<li>Source có <code>/auth/confirm</code> chỉ chấp nhận loại <code>recovery</code>. Token được xác thực bằng Supabase, rồi chuyển sang <code>/update-password</code>. <code>/auth/callback</code> cũng có sẵn để xử lý code theo luồng PKCE khi dùng template mặc định; luồng đó có thể cần mở thư trong cùng trình duyệt đã gửi yêu cầu.</li>
+<li>Nhấn Quên mật khẩu ở <code>/login</code>, nhập email được cấp. Mở liên kết email và đặt mật khẩu mới ≥12 ký tự. Link chỉ dùng một lần và có thời hạn.</li>
+<li>Dịch vụ email mặc định của Supabase có thể chỉ cho gửi tới thành viên team được cho phép và có rate limit. Nếu email user thử nghiệm không được hỗ trợ, thêm người nhận phù hợp theo cấu hình Supabase hoặc cấu hình SMTP riêng mà Sếp lựa chọn. Source không bắt buộc mua SMTP. Xem <a href="https://supabase.com/docs/guides/auth/auth-smtp">giới hạn email</a>.</li>
+<li>Không thử gửi liên tục khi rate limit; không thay email template của production đang dùng app khác. Với mỗi môi trường, Site URL trỏ đúng app đang thử.</li>
+</ol>
+<h2>13. Checklist dùng thử</h2>
+<ul>
+<li><input disabled="" type="checkbox"> <code>/api/health</code> trả version <code>0.1.0</code>; <code>supabaseConfigured=true</code> chỉ xác nhận biến hợp lệ, <strong>không</strong> chứng minh database kết nối.</li>
+<li><input disabled="" type="checkbox"> Đăng nhập chủ thành công và hiển thị <strong>Đã kết nối Supabase</strong> sau khi đọc dữ liệu.</li>
+<li><input disabled="" type="checkbox"> Có 6 khách, 6 dịch vụ, 8 đơn mẫu; xem chi tiết đơn, lọc trạng thái và tìm tên không dấu được.</li>
+<li><input disabled="" type="checkbox"> Dashboard hiển thị 2.520.000đ giá trị đơn hoàn tất mẫu; không gọi đó là khoản thu thật.</li>
+<li><input disabled="" type="checkbox"> Đổi tên salon tại Cài đặt, lưu rồi tải lại; tên mới vẫn còn và cập nhật ở sidebar.</li>
+<li><input disabled="" type="checkbox"> Tài khoản thu ngân không thấy đội ngũ và không lưu được thông tin salon.</li>
+<li><input disabled="" type="checkbox"> Tài khoản Auth chưa có membership thấy màn hình chưa được cấp quyền.</li>
+<li><input disabled="" type="checkbox"> Đăng xuất; truy cập <code>/app</code> phải về đăng nhập.</li>
+<li><input disabled="" type="checkbox"> Xem <code>/demo</code>: phải có nhãn chưa kết nối database; đổi vai trò ở đó chỉ mô phỏng giao diện.</li>
+<li><input disabled="" type="checkbox"> Kiểm tra điện thoại, tablet và máy tính. Bản này là responsive web, chưa có manifest/service worker để cài PWA.</li>
+</ul>
+<h2>14. Lỗi thường gặp</h2>
+<table>
+<thead>
+<tr>
+<th>Hiện tượng</th>
+<th>Kiểm tra và cách xử lý</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>App vào trang cài đặt, nút đăng nhập bị khóa</td>
+<td>Kiểm tra 2 biến Supabase, URL/key cùng project, key đúng loại; restart local hoặc Redeploy Vercel</td>
+</tr>
+<tr>
+<td>Đăng nhập không thành công</td>
+<td>Email/mật khẩu đúng? User đã Auto Confirm? Supabase có pause? Không dùng mật khẩu database để đăng nhập app</td>
+</tr>
+<tr>
+<td>Đã xác thực nhưng database chưa sẵn sàng</td>
+<td>Đã chạy migration? Bảng đúng public schema? API key có quyền anon/publishable? Không tự tắt RLS để xử lý</td>
+</tr>
+<tr>
+<td>Tài khoản chưa được cấp quyền</td>
+<td>Auth user cần <code>profiles</code> và <code>salon_members.active=true</code>; chạy bootstrap đúng email chủ hoặc add_staff đúng email</td>
+</tr>
+<tr>
+<td>Không có dữ liệu mẫu</td>
+<td>Kiểm tra bootstrap đã chạy và cùng Supabase project với Vercel; không sửa code để đổi thành dữ liệu local</td>
+</tr>
+<tr>
+<td>Lưu tên salon không được</td>
+<td>Phải là owner active; tên từ 2–100 ký tự; kiểm tra mạng và policy</td>
+</tr>
+<tr>
+<td>Supabase không phản hồi</td>
+<td>Mở Dashboard → Resume project nếu pause; chờ sẵn sàng rồi tải lại</td>
+</tr>
+<tr>
+<td>Không nhận được thư reset</td>
+<td>Kiểm tra spam, hạn mức, quyền người nhận, SMTP, Site URL và template recovery; dùng user tạo confirmed trực tiếp để tiếp tục thử đăng nhập</td>
+</tr>
+<tr>
+<td>Link reset hết hạn</td>
+<td>Gửi lại một lần, dùng link mới nhất; template token_hash tránh phụ thuộc verifier của trình duyệt</td>
+</tr>
+<tr>
+<td>Vercel build lỗi hoặc 404</td>
+<td>Root Directory phải có package.json; Next.js preset; Node 24; xem build logs; không đặt output thành dist/out</td>
+</tr>
+<tr>
+<td><code>npm ci</code> báo thiếu lockfile</td>
+<td>Dùng đúng thư mục source trong ZIP và giữ package-lock.json. Không chỉ copy src</td>
+</tr>
+<tr>
+<td>Typecheck báo thiếu .next types sau khi xóa cache</td>
+<td>Chạy <code>npm run build</code> để Next sinh lại next-env.d.ts/routes types; không lấy .next từ ZIP cũ</td>
+</tr>
+<tr>
+<td>Port 3000 bận</td>
+<td>Dừng server cũ hoặc dùng <code>npm run dev -- --port 3001</code> và cập nhật URL tương ứng</td>
+</tr>
+<tr>
+<td>Git báo fetch first</td>
+<td>Fetch/pull và tích hợp thay đổi; không force push ghi đè lịch sử</td>
+</tr>
+</tbody></table>
+<h2>15. Sao lưu nâng cấp và quay lại</h2>
+<ul>
+<li>Trước nâng cấp có đổi schema: xuất schema/data bằng công cụ Supabase phù hợp, giữ bản copy ngoài project; xác nhận cách giữ tài khoản Auth. Không coi seed là backup.</li>
+<li>Supabase Free không bảo đảm đủ để phục hồi dữ liệu kinh doanh; v0.1.0 chỉ dùng mẫu. Nếu reset dữ liệu thử, tạo project thử mới và làm lại; không reset production.</li>
+<li>Tất cả nâng cấp dùng migration mới, giữ nguyên lịch sử migration cũ; không sửa rồi chạy lại file tạo bảng hiện tại trên project đã dùng.</li>
+<li>Rollback Vercel chỉ quay lại code, không tự quay lại database. Nâng cấp schema phải có kế hoạch phục hồi dữ liệu riêng.</li>
+<li>Giữ source ZIP mới nhất. Để xây dựng tiếp, gửi ZIP này và yêu cầu <strong>“Dùng HV-App, xây dựng phiên bản tiếp theo trong ROADMAP.md”</strong>. Không gửi <code>.env.local</code>, mật khẩu hoặc dữ liệu khách thật cùng ZIP.</li>
+</ul>
+<h2>16. Cấu trúc source</h2>
+<table>
+<thead>
+<tr>
+<th>Thư mục hoặc file</th>
+<th>Vai trò</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>src/app</code></td>
+<td>Routes Next.js, server actions, màn hình Auth/app/setup/demo</td>
+</tr>
+<tr>
+<td><code>src/components</code></td>
+<td>Workspace, biểu mẫu, modal và giao diện responsive</td>
+</tr>
+<tr>
+<td><code>src/lib</code></td>
+<td>Kết nối Supabase, xác thực cấu hình, truy vấn và dữ liệu mẫu</td>
+</tr>
+<tr>
+<td><code>src/proxy.ts</code></td>
+<td>Làm mới và kiểm tra phiên với Supabase Auth</td>
+</tr>
+<tr>
+<td><code>supabase/migrations</code></td>
+<td>Tạo bảng, ràng buộc, quyền và RLS</td>
+</tr>
+<tr>
+<td><code>supabase/01_bootstrap_demo.sql</code></td>
+<td>Cấp chủ và dữ liệu mẫu có kiểm soát</td>
+</tr>
+<tr>
+<td><code>supabase/02_add_staff.sql</code></td>
+<td>Cấp thành viên thu ngân từ Auth user đã tạo</td>
+</tr>
+<tr>
+<td><code>supabase/03_verify_setup.sql</code></td>
+<td>Kiểm tra dữ liệu mẫu, thành viên và RLS sau cài đặt</td>
+</tr>
+<tr>
+<td><code>scripts</code></td>
+<td>Chạy dev tương thích host/port, kiểm tra cấu hình và sinh seed từ fixture</td>
+</tr>
+<tr>
+<td><code>tests</code></td>
+<td>Logic, thời gian Việt Nam, redirect an toàn, database và RLS</td>
+</tr>
+<tr>
+<td><code>ROADMAP.md</code>, <code>CHANGELOG.md</code>, <code>TEST_REPORT.md</code></td>
+<td>Phạm vi, thay đổi, kiểm tra và giới hạn xác minh</td>
+</tr>
+</tbody></table>
+<h2>17. Tài liệu chính thức</h2>
+<ul>
+<li><a href="https://vercel.com/docs/frameworks/full-stack/nextjs">Next.js trên Vercel</a></li>
+<li><a href="https://vercel.com/docs/git">Deploy từ Git</a></li>
+<li><a href="https://vercel.com/docs/cli/deploy">Deploy bằng CLI</a></li>
+<li><a href="https://supabase.com/docs/guides/auth/server-side/creating-a-client">Supabase SSR</a></li>
+<li><a href="https://supabase.com/docs/guides/database/postgres/row-level-security">Supabase RLS</a></li>
+<li><a href="https://supabase.com/docs/guides/auth/auth-email-templates">Email templates</a></li>
+<li><a href="https://supabase.com/docs/guides/auth/redirect-urls">Redirect URLs</a></li>
+</ul>
+<p>Giao diện Dashboard và chính sách Free có thể thay đổi; đối chiếu tài liệu chính thức trước vận hành. Phiên bản source và README này: <strong>v0.1.0</strong>.</p>
+</main></body></html>
