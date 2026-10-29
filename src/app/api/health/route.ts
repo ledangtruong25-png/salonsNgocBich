@@ -1,3 +1,3 @@
 import { supabaseEnv } from '@/lib/env';
 export const dynamic = 'force-dynamic';
-export function GET() { return Response.json({ status: 'ok', version: '1.1.0', supabaseConfigured: !!supabaseEnv(), databaseVerified: false }, { headers: { 'Cache-Control': 'no-store' } }); }
+export function GET() { return Response.json({ status: 'ok', version: '1.2.0', supabaseConfigured: !!supabaseEnv(), databaseVerified: false }, { headers: { 'Cache-Control': 'no-store' } }); }

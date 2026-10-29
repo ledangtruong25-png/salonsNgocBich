@@ -1,5 +1,5 @@
 export type Role = 'owner' | 'cashier';
-export type Salon = { id: string; name: string; phone: string; address: string; timezone: string };
+export type Salon = { theme_color?:string; id: string; name: string; phone: string; address: string; timezone: string };
 export type Customer = { id: string; full_name: string; phone: string | null; visits: number; last_visit: string; is_demo: boolean };
 export type Service = { id: string; name: string; category: string; variant: string; price: number; duration_minutes: number; active: boolean; is_demo: boolean };
 export type Order = { id: string; code: string; customer_id: string; customer_name: string; customer_phone: string; service_name: string; check_in: string; check_out: string | null; subtotal: number; discount_type: 'fixed'|'percent'; discount_value: number; discount_amount: number; total: number; status: 'completed' | 'serving' | 'cancelled'; is_demo: boolean; revision: number; paid_at: string | null; note: string; cancel_reason: string|null; receipt_salon: Pick<Salon,'name'|'phone'|'address'>|null };

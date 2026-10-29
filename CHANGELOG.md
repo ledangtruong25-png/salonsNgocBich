@@ -1,3 +1,7 @@
+# v1.2.0
+
+Lịch hẹn và danh mục thợ. RPC kiểm tra trùng tại database với khóa theo salon, override cần lý do. Chuyển hẹn thành đơn idempotent; kiểm tra trạng thái thanh toán trước hoàn thành. Màu chủ đạo lưu theo salon, chỉ owner thay đổi; chữ nút tương phản. Migration tăng dần bảo toàn dữ liệu. Hướng dẫn Word cập nhật.
+
 # v1.1.0
 
 Mở/đóng ca, gắn khoản thu với ca, hoàn tiền từng phần chỉ owner, báo cáo thu ròng, nhật ký. Giữ dữ liệu cũ và phiếu thu. Hướng dẫn Word, bỏ HTML hướng dẫn.

@@ -1,3 +1,19 @@
+# Salon Manager v1.2.0
+
+## Nâng cấp từ v1.1.0
+
+Sao lưu database. Chạy một lần `supabase/migrations/202610290004_appointments.sql`. Giữ Auth users và biến môi trường, deploy source mới. Không reset database. Đọc `HUONG_DAN_SU_DUNG.docx` trước khi sử dụng.
+
+## Chức năng mới
+
+Lịch hẹn, phân thợ, sửa/hủy/xác nhận/không đến, chuyển hẹn thành một đơn duy nhất, hoàn thành sau thanh toán. Trùng giờ cùng thợ mặc định bị chặn; chỉ cho phép khi tích xác nhận và nhập lý do. Chủ salon có thể đổi màu chủ đạo dùng chung, tự chọn màu chữ trên nút cho dễ đọc.
+
+UI lịch hiển thị 200 bản ghi gần nhất; chọn khách/dịch vụ tối đa 1000 dòng. Các tính năng ca, hoàn tiền, in và báo cáo v1.1.0 vẫn giữ nguyên. Chưa có kéo thả lịch tháng, nhắc SMS/Zalo hoặc đồng bộ offline.
+
+## Cài mới và tài liệu nền tảng
+
+Chạy bốn migrations theo thứ tự foundation, counter, reconciliation, appointments. Tài liệu nền tảng dưới đây vẫn dùng cho cấu hình Supabase, Auth, Vercel; phần nâng cấp v1.2.0 ở đầu file là chỉ dẫn hiện tại.
+
 # Salon Manager v1.1.0
 
 Hướng dẫn sử dụng và nâng cấp: HUONG_DAN_SU_DUNG.docx.
