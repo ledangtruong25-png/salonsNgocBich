@@ -1,0 +1,3 @@
+'use client';
+import {useEffect,useState} from 'react';import {normalizeTheme,themeVars,type Theme} from '@/lib/theme';
+export function ThemeProvider({theme,children}:{theme:Theme;children:React.ReactNode}){const [preview,setPreview]=useState<Theme|null>(null);useEffect(()=>{const listener=(e:Event)=>setPreview((e as CustomEvent).detail?normalizeTheme((e as CustomEvent).detail):null);addEventListener('salon-theme-preview',listener);return()=>removeEventListener('salon-theme-preview',listener);},[]);useEffect(()=>setPreview(null),[theme]);return <div className="app-theme" style={themeVars(preview||theme) as React.CSSProperties}>{children}</div>;}

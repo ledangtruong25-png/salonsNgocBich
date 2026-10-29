@@ -1,7 +1,9 @@
-# Kiểm tra v1.2.0
+# Kiểm tra Salon Manager v1.2.1
 
-96/96 tests đạt. Bao gồm hồi quy v1.0/v1.1 và kiểm tra migration lịch hẹn, chặn trùng, xác nhận override, chuyển hẹn lặp chỉ sinh một đơn, quyền đổi màu. Kiểm tra SQL trên PostgreSQL WASM PGlite, Auth được mô phỏng trong tests.
+98/98 tests đạt: hồi quy ca/đơn/lịch, migration appearance, quyền owner, chặn mã màu hoặc kiểu JSON không hợp lệ, chặn ghi trực tiếp appearance qua API, biến màu toàn hệ thống và tương phản chữ.
 
-Production build Next.js đạt, có routes appointments và reconciliation. Word đã render và kiểm tra 2 trang.
+Production build đạt. Tài liệu Word được render và kiểm tra 2 trang. ZIP không gồm secrets, node_modules hoặc build cache.
 
-Chưa kiểm thử UI end-to-end, nhiều kết nối hosted đồng thời, Supabase của Sếp, máy in hay cài PWA trên thiết bị thật. Chưa push/deploy. Danh sách lịch 200 dòng và lựa chọn 1000 dòng như hướng dẫn; không có SMS/Zalo/offline sync.
+Browser preview tải dashboard nhưng chưa xác minh phản hồi tương tác khi bấm Cài đặt; không coi là end-to-end UI đã đạt. Chưa nghiệm thu lưu màu, tải lại hoặc tài khoản khác trên Supabase hosted của Sếp. Chưa push/deploy. Checklist UI thực tế trong hướng dẫn Word.
+
+Giao diện chung áp dụng sau đăng nhập; không đổi phiếu in, login/setup/demo. Giữ giới hạn danh sách 200 lịch và 1000 khách/dịch vụ của v1.2.0. Gradient nên dùng hai màu có độ sáng tương tự.

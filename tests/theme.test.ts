@@ -1,0 +1,2 @@
+import test from 'node:test';import assert from 'node:assert/strict';import {contrast,normalizeTheme,themeVars,defaultTheme} from '../src/lib/theme.ts';
+test('appearance rejects CSS values and generates shared layout variables',()=>{assert.equal(normalizeTheme({sidebar:'url(x)'}).sidebar,defaultTheme.sidebar);assert.equal(contrast('#ffffff'),'#000000');assert.equal(contrast('#000000'),'#ffffff');const v=themeVars({...defaultTheme,gradient:true});assert.ok(v['--sidebar-background'].startsWith('linear-gradient'));assert.equal(v['--canvas'],defaultTheme.background);});

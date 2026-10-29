@@ -1,3 +1,11 @@
+# Salon Manager v1.2.1
+
+Bản sửa giao diện theo yêu cầu: cấu hình nằm trong Cài đặt → Tùy chỉnh giao diện. Màu sidebar, gradient hai màu, nền toàn trang, nền thẻ, màu nút; xem trước toàn ứng dụng, lưu cho cả salon, hủy và mặc định. Chỉ chủ salon được lưu. Bỏ ô đổi màu khỏi lịch hẹn.
+
+Nâng từ v1.2.0: sao lưu, chạy duy nhất `supabase/migrations/202610290005_appearance.sql`, sau đó deploy source mới. Màu chủ đạo cũ được giữ làm màu sidebar/điểm nhấn ban đầu. Từ v1.1.0 chạy migration appointments rồi appearance. Không reset database. Hướng dẫn Word: `HUONG_DAN_SU_DUNG.docx`.
+
+Giữ nguyên tài khoản, lịch hẹn, đơn, thanh toán, ca và hoàn tiền. Theme không thay phiếu in. Các trang login/setup/demo không thuộc giao diện vận hành đã đăng nhập.
+
 # Salon Manager v1.2.0
 
 ## Nâng cấp từ v1.1.0
