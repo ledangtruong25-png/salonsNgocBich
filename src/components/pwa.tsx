@@ -1,0 +1,5 @@
+'use client';
+import { useEffect,useState } from 'react';
+type InstallEvent=Event & {prompt:()=>Promise<void>;userChoice:Promise<{outcome:string}>};
+export function PwaRegister(){useEffect(()=>{if('serviceWorker' in navigator)navigator.serviceWorker.register('/sw.js').catch(()=>{});},[]);return null;}
+export function InstallButton(){const [prompt,setPrompt]=useState<InstallEvent|null>(null),[standalone,setStandalone]=useState(false);useEffect(()=>{setStandalone(matchMedia('(display-mode: standalone)').matches);const before=(e:Event)=>{e.preventDefault();setPrompt(e as InstallEvent);};const installed=()=>{setPrompt(null);setStandalone(true);};addEventListener('beforeinstallprompt',before);addEventListener('appinstalled',installed);return()=>{removeEventListener('beforeinstallprompt',before);removeEventListener('appinstalled',installed);};},[]);if(standalone)return null;return prompt?<button className="install-button" onClick={async()=>{await prompt.prompt();await prompt.userChoice;setPrompt(null);}}>Cài app</button>:<a className="install-button" href="/setup#pwa">Cài PWA</a>;}

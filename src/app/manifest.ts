@@ -1,0 +1,2 @@
+import type { MetadataRoute } from 'next';
+export default function manifest():MetadataRoute.Manifest{return {id:'/',name:'Salon Manager',short_name:'Salon',description:'Quản lý salon tóc tại quầy',lang:'vi',start_url:'/app',scope:'/',display:'standalone',background_color:'#f7f8f5',theme_color:'#285a45',icons:[{src:'/pwa-192.png',sizes:'192x192',type:'image/png',purpose:'any'},{src:'/pwa-512.png',sizes:'512x512',type:'image/png',purpose:'any'},{src:'/pwa-maskable.png',sizes:'512x512',type:'image/png',purpose:'maskable'}]};}

@@ -1,16 +1,18 @@
 # Changelog
 
-## 0.1.0 — 2026-10-28
+## 1.0.0 — 28/10/2026
 
-- Khởi tạo Next.js 16.4.3, React 19.3.1, TypeScript và runtime Node 24.
-- Giao diện tiếng Việt responsive cho desktop/tablet/điện thoại.
-- Đăng nhập, đăng xuất và làm mới phiên bằng Supabase SSR/Auth; trang reset và cập nhật mật khẩu.
-- Mô hình một salon, hai vai trò chủ/thu ngân; sáu bảng bật RLS, cấm tự sửa quyền và ghi đơn từ client.
-- Đọc khách, dịch vụ, đơn mẫu; tìm kiếm không dấu, lọc nhóm/trạng thái, modal chi tiết.
-- Chủ salon xem đội ngũ, sửa thông tin chung; thu ngân chỉ đọc.
-- `/demo` công khai chỉ có dữ liệu giả lập; `/setup` hướng dẫn cài đặt; `/api/health` kiểm tra trạng thái cấu hình không lộ key.
-- SQL migration, bootstrap chủ + mẫu, cấp thu ngân; tests chạy database PostgreSQL trong bộ nhớ.
-- Cấu hình Vercel Hobby, `.env.example`, lockfile, README cấu hình Free chi tiết và roadmap.
-- Chưa có đơn thật, thanh toán, in, báo cáo vận hành hoặc PWA; các phần này thuộc v1.0.0.
+- Nâng cấp trực tiếp từ gói 7z v0.1.0 do Sếp cung cấp; giữ stack, Auth, RLS và quyền owner/cashier.
+- Quản lý khách thật, SĐT không trùng; dịch vụ/gói/độ dài tóc, giá, thời lượng và ngừng bán.
+- Đơn nhiều dịch vụ, giờ vào/ra, số lượng, giảm tiền/%, ghi chú; revision chống ghi đè.
+- SQL RPC tính lại tổng; thanh toán nguyên tử, payment unique theo order, retry idempotent; hủy đơn chưa thu có lý do.
+- Snapshot đơn giá, khách và thông tin salon; in lại phiếu K80/A4; không hỗ trợ hóa đơn điện tử thuế.
+- SQL báo cáo giờ/ngày/tuần/tháng/năm theo paid_at tại Việt Nam; CSV; không giới hạn theo trang UI.
+- PWA manifest/icon, service worker chỉ cache tài nguyên công khai và trang offline. Giao dịch cần mạng.
+- Migration tăng dần giữ dữ liệu mẫu/role cũ, không yêu cầu reset. Mẫu không đi vào vận hành thật.
+- Chuẩn hóa các chỗ email/tên cá nhân trong script cài đặt về placeholder; tài khoản Auth thực tế trong DB không thay đổi.
+- README/hướng dẫn HTML/roadmap và bộ kiểm tra hồi quy cập nhật. Chưa deploy hoặc nghiệm thu trên dịch vụ/tài khoản/máy in của Sếp.
 
-Source đã build/kiểm tra trong môi trường phát triển. Không có URL GitHub hoặc deployment Vercel trên tài khoản Sếp ở bản bàn giao ZIP; Supabase của Sếp cần được cấu hình theo README trước khi xác minh kết nối thật.
+## 0.1.0
+
+Nền tảng chạy thử: Supabase Auth/SSR, owner/cashier, RLS, dữ liệu mẫu và cập nhật thông tin salon. Giữ migration nền tảng và scripts bootstrap để cài mới; không chạy lại foundation khi nâng cấp.

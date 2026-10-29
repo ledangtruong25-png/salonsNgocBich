@@ -1,11 +1,17 @@
 export type Role = 'owner' | 'cashier';
 export type Salon = { id: string; name: string; phone: string; address: string; timezone: string };
 export type Customer = { id: string; full_name: string; phone: string | null; visits: number; last_visit: string; is_demo: boolean };
-export type Service = { id: string; name: string; category: string; price: number; duration_minutes: number; active: boolean; is_demo: boolean };
-export type SampleOrder = { id: string; code: string; customer_name: string; service_name: string; check_in: string; check_out: string | null; total: number; status: 'completed' | 'serving' | 'cancelled'; is_demo: boolean };
+export type Service = { id: string; name: string; category: string; variant: string; price: number; duration_minutes: number; active: boolean; is_demo: boolean };
+export type Order = { id: string; code: string; customer_id: string; customer_name: string; customer_phone: string; service_name: string; check_in: string; check_out: string | null; subtotal: number; discount_type: 'fixed'|'percent'; discount_value: number; discount_amount: number; total: number; status: 'completed' | 'serving' | 'cancelled'; is_demo: boolean; revision: number; paid_at: string | null; note: string; cancel_reason: string|null; receipt_salon: Pick<Salon,'name'|'phone'|'address'>|null };
+export type SampleOrder = Pick<Order,'id'|'code'|'customer_name'|'service_name'|'check_in'|'check_out'|'total'|'status'|'is_demo'>;
+export type OrderItem = { id:string; catalog_id:string; name:string; variant:string; quantity:number; unit_price:number; line_total:number; position:number };
+export type Payment = { id:string; method:'cash'|'transfer'; amount:number; tendered:number; change_amount:number; paid_at:string };
+export type OrderDetail = Order & { items:OrderItem[]; payment:Payment|null };
 export type Member = { user_id: string; role: Role; active: boolean; full_name: string };
-export type WorkspaceData = {
-  salon: Salon; role: Role; userName: string; email: string;
-  customers: Customer[]; services: Service[]; orders: SampleOrder[]; members: Member[];
-};
+export type Page<T> = { rows:T[]; count:number };
+export type Period = 'hour'|'day'|'week'|'month'|'year';
+export type Report = { start:string; end:string; period:Period; revenue:number; orders:number; discount:number; cash:number; transfer:number; series:{time:string;revenue:number;orders:number}[]; services:{name:string;variant:string;quantity:number;gross:number}[] };
+export type WorkspaceData = { salon: Salon; role: Role; userName: string; email: string; customers: Customer[]; customerCount:number; services: Service[]; orders: Order[]; orderCount:number; servingCount:number; members: Member[]; report:Report };
 export type ActionState = { error?: string; success?: string };
+export type Result<T> = {data:T; error?:never}|{data?:never;error:string};
+export type OrderInput = { id:string; revision:number; customer:string; checkIn:string; checkOut:string|null; items:{catalog_id:string;quantity:number}[]; discountType:'fixed'|'percent'; discountValue:number; note:string };

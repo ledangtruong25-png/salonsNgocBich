@@ -1,4 +1,5 @@
 import { Workspace } from '@/components/workspace';
 import fixture from '@/lib/demo.json';
+import { emptyReport, todayVN } from '@/lib/sales';
 import type { WorkspaceData } from '@/lib/types';
-export default function DemoPage() { return <Workspace data={fixture as WorkspaceData} mode="demo"/>; }
+export default function DemoPage(){const report=emptyReport();report.revenue=2520000;report.cash=1520000;report.transfer=1000000;report.orders=5;report.series=Array.from({length:24},(_,i)=>({time:`${todayVN()}T${String(i).padStart(2,'0')}:00:00`,orders:[9,10,13,15,17].includes(i)?1:0,revenue:({9:150000,10:800000,13:520000,15:650000,17:400000} as Record<number,number>)[i]||0}));const data={...fixture,customerCount:fixture.customers.length,orderCount:fixture.orders.length,servingCount:fixture.orders.filter(o=>o.status==='serving').length,report,services:fixture.services.map(s=>({...s,variant:''})),orders:fixture.orders.map((o,i)=>({...o,code:'HD-'+o.id.replaceAll('-','').toUpperCase(),customer_id:fixture.customers[i%fixture.customers.length].id,customer_phone:'',subtotal:o.total,discount_type:'fixed',discount_value:0,discount_amount:0,revision:1,paid_at:o.status==='completed'?o.check_out:null,note:'',cancel_reason:null,receipt_salon:null}))} as WorkspaceData;return <Workspace data={data} mode="demo"/>;}

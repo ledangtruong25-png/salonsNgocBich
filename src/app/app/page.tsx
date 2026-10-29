@@ -17,10 +17,10 @@ export default async function AppPage() {
   }
   let data: WorkspaceData | null;
   try { data = await loadWorkspace(client,auth.data.user); }
-  catch { return <Problem title="Database chưa sẵn sàng" text="Đã xác thực tài khoản nhưng chưa đọc được dữ liệu salon. Kiểm tra project có đang tạm dừng và đã chạy migration, bootstrap trong thư mục supabase theo README hay chưa."/>; }
+  catch { return <Problem title="Database chưa sẵn sàng" text="Đã xác thực tài khoản nhưng chưa đọc được dữ liệu salon. Kiểm tra project có đang tạm dừng và đã chạy migration nền tảng và counter v1.0.0, cấp membership trong thư mục supabase theo README hay chưa."/>; }
   if (!data) return <Problem title="Tài khoản chưa được cấp quyền" text="Liên hệ chủ salon để thêm thành viên hoặc kích hoạt lại tài khoản trong salon_members. Đăng nhập thành công không tự cấp quyền vào salon."/>;
   return <Workspace data={data} mode="connected"/>;
 }
 function Problem({title,text}:{title:string;text:string}) {
-  return <main className="center-page"><div className="problem-card"><span className="eyebrow">SALON MANAGER · V0.1.0</span><h1>{title}</h1><p className="muted">{text}</p><div className="button-row"><Link className="button primary" href="/app">Thử tải lại</Link><Link className="button" href="/setup">Hướng dẫn cài đặt</Link></div><form action={logoutAction}><button className="text-link">Đăng xuất và đổi tài khoản</button></form></div></main>;
+  return <main className="center-page"><div className="problem-card"><span className="eyebrow">SALON MANAGER · V1.0.0</span><h1>{title}</h1><p className="muted">{text}</p><div className="button-row"><Link className="button primary" href="/app">Thử tải lại</Link><Link className="button" href="/setup">Hướng dẫn cài đặt</Link></div><form action={logoutAction}><button className="text-link">Đăng xuất và đổi tài khoản</button></form></div></main>;
 }

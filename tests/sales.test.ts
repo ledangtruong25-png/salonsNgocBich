@@ -1,0 +1,6 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {quote,todayVN,toLocalInput,fromLocalInput,reportCsv,emptyReport} from '../src/lib/sales.ts';
+test('counter quote rounds VND percentage and rejects invalid quantities, overdiscount and overlarge order',()=>{assert.deepEqual(quote([{quantity:2,unit_price:150001}],'percent',15),{subtotal:300002,discount:45000,total:255002});assert.throws(()=>quote([{quantity:0,unit_price:1}],'fixed',0));assert.throws(()=>quote([{quantity:1,unit_price:1}],'fixed',2));assert.throws(()=>quote([{quantity:99,unit_price:100000000}],'fixed',0));assert.equal(quote([{quantity:1,unit_price:10}],'percent',100).total,0);});
+test('input timezone roundtrips at UTC midnight, independent of device timezone',()=>{const stamp='2026-10-31T17:20:00.000Z';assert.equal(todayVN(new Date(stamp)),'2026-11-01');assert.equal(toLocalInput(stamp),'2026-11-01T00:20');assert.equal(fromLocalInput('2026-11-01T00:20'),stamp);});
+test('CSV contains BOM and exact period figures',()=>{const r=emptyReport();r.series=[{time:'2026-11-01T00:00:00',orders:2,revenue:500000}];const csv=reportCsv(r);assert.ok(csv.startsWith('\uFEFF'));assert.ok(csv.includes('"2","500000"'));});
