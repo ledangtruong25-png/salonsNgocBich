@@ -1,3 +1,9 @@
+# Salon Manager v1.1.0
+
+Hướng dẫn sử dụng và nâng cấp: HUONG_DAN_SU_DUNG.docx.
+
+Nâng cấp v1.0.0: sao lưu, chạy duy nhất supabase/migrations/202610290003_reconciliation.sql, deploy source mới. Mở ca trước khi thanh toán. Giao dịch cũ giữ nguyên, session_id null.
+
 # Salon Manager v1.0.0 — Vận hành salon tại quầy
 
 Nâng cấp từ source v0.1.0 Sếp gửi. Giao diện tiếng Việt cho máy tính/điện thoại, Supabase Auth + PostgreSQL, deploy Next.js trên Vercel. Bản ZIP gồm source đầy đủ, lockfile, migrations và hướng dẫn.

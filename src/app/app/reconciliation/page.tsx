@@ -1,0 +1,6 @@
+import Link from 'next/link';
+import {redirect} from 'next/navigation';
+import {createSupabase} from '@/lib/supabase/server';
+import {Reconciliation} from '@/components/reconciliation';
+export const dynamic='force-dynamic';
+export default async function Page(){const c=await createSupabase();const {data:{user}}=await c.auth.getUser();if(!user)redirect('/login');const {data:m}=await c.from('salon_members').select('salon_id,role').eq('user_id',user.id).eq('active',true).single();if(!m)redirect('/app');const [payments,sessions,audit]=await Promise.all([c.from('payments').select('id,amount,orders(code,customer_name)').eq('salon_id',m.salon_id).order('paid_at',{ascending:false}).limit(100),c.from('cash_sessions').select('*').eq('salon_id',m.salon_id).order('opened_at',{ascending:false}).limit(100),m.role==='owner'?c.from('audit_events').select('*').eq('salon_id',m.salon_id).order('created_at',{ascending:false}).limit(100):Promise.resolve({data:[],error:null})]);return <main className="setup-page"><Link className="button" href="/app">← Quay lại quầy</Link><h1 style={{margin:'30px 0'}}>Ca thu ngân và đối soát</h1>{sessions.error?<p>Chạy migration 202610290003_reconciliation.sql trước khi sử dụng.</p>:<Reconciliation payments={payments.data||[]} sessions={sessions.data||[]} audit={audit.data||[]} owner={m.role==='owner'} user={user.id}/>}</main>;}

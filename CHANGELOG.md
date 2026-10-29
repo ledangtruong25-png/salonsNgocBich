@@ -1,3 +1,7 @@
+# v1.1.0
+
+Mở/đóng ca, gắn khoản thu với ca, hoàn tiền từng phần chỉ owner, báo cáo thu ròng, nhật ký. Giữ dữ liệu cũ và phiếu thu. Hướng dẫn Word, bỏ HTML hướng dẫn.
+
 # Changelog
 
 ## 1.0.0 — 28/10/2026
