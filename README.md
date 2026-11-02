@@ -1,3 +1,30 @@
+# Salon Manager v1.3.0
+
+## Nháp offline và đồng bộ
+
+Mở **Nháp offline và đồng bộ** từ menu hoặc `/drafts.html`. Đăng nhập, làm mới danh mục online một lần trước khi mất mạng. Nhập tên, SĐT, giờ vào Việt Nam, dịch vụ/số lượng và ghi chú; Lưu nháp trên thiết bị; Đưa vào hàng đợi khi muốn gửi. Trang mở và có mạng sẽ xác thực lại rồi đồng bộ; không tự chạy nền khi app đã đóng.
+
+IndexedDB giữ nháp trên cùng trình duyệt/thiết bị, có nhãn chưa gửi/đang gửi/đã đồng bộ/lỗi. Mã nháp cũng là idempotency key; RPC lưu khách/đơn/operation trong cùng transaction. Không ghi doanh thu/payment khi đồng bộ. Khi giá đổi phải xác nhận lại, dịch vụ tắt phải sửa, tài khoản không khớp không gửi. Catalog offline chỉ có dịch vụ, không cache danh sách khách/token.
+
+## Nâng cấp từ v1.2.2
+
+1. Sao lưu, giữ ZIP cũ, dừng nhận giao dịch trong lúc nâng cấp.
+2. Chạy duy nhất `supabase/migrations/202611020006_offline_drafts.sql` một lần. Không reset database; các migrations cũ giữ nguyên.
+3. Giữ env, Node 24, chạy `npm ci`, `npm run build`, deploy code mới lên Vercel.
+4. Mở app online và `/drafts.html` để service worker cập nhật shell offline. Kiểm tra trước khi dùng khi mất mạng.
+
+Hướng dẫn sử dụng hiện tại: **HUONG_DAN_SU_DUNG.docx**. Phần cấu hình nền tảng bên dưới vẫn dùng cho Auth, env, Vercel và cài mới; các mục ghi phiên bản cũ là lịch sử.
+
+## Giới hạn và an toàn dữ liệu
+
+Chỉ dữ liệu **Đã đồng bộ** mới có trên Supabase. Nháp không tự lưu từng phím gõ; phải bấm Lưu. Xóa bộ nhớ trình duyệt, gỡ app, chế độ riêng tư hoặc lỗi/quota IndexedDB có thể mất nháp. Không cam kết backup nháp. Đăng xuất không tự xóa nháp; xóa bằng nút sau khi xác minh đã đồng bộ nếu dùng máy chung. Ai dùng cùng trình duyệt có thể xem dữ liệu thiết bị.
+
+Màn hình offline độc lập không cần tải các trang Auth/RSC được cache. Service worker chỉ cache HTML/JS/CSS công khai, icons và trang offline; API, khách, phiếu thu và token không cache. POST sync dùng cookie xác thực hiện tại và kiểm tra origin, actor, salon và membership tại database. Thanh toán/hoàn/đóng ca/lịch hẹn/theme vẫn cần mạng.
+
+Kiểm tra: `npm run typecheck`, `npm test`, `npm run build`; bộ tests dùng PGlite, không gọi project thật. `node --check public/drafts.js` kiểm tra cú pháp. Chi tiết giới hạn xác minh tại TEST_REPORT.md. Chưa push/deploy trên tài khoản Sếp.
+
+## Cấu hình nền tảng và lịch sử hướng dẫn
+
 # Salon Manager v1.2.2
 
 Đọc PAYMENT_FIX.md trước: sửa thông báo thiếu ca và lỗi cấu trúc database. Không có migration mới từ v1.2.1.

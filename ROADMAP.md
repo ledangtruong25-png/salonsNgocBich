@@ -1,15 +1,13 @@
 # Roadmap Salon Manager
 
-Phiên bản hiện tại v1.2.1.
+Phiên bản hiện tại **v1.3.0**.
 
-| Phiên bản | Mục tiêu | Trạng thái |
-|---|---|---|
-| v0.1.0 | Auth và nền tảng Supabase | Đã bàn giao |
-| v1.0.0 | Đơn, thu tiền, in, thống kê, PWA | Đã bàn giao |
-| v1.1.0 | Ca, hoàn tiền, thu ròng, nhật ký | Kế thừa trong source |
-| v1.2.0 | Lịch hẹn, phân thợ, trùng có xác nhận, màu chủ đạo | Source hoàn thành; cần nghiệm thu hosted |
-| v1.2.1 | Sửa tùy chỉnh giao diện toàn web trong Cài đặt theo ảnh tham khảo | Source hoàn thành, cần nghiệm thu hosted |
-| v1.3.0 | Nháp offline, hàng đợi đồng bộ, xử lý xung đột, không thu tiền offline | Dự kiến |
-| v2.0.0 | Nhiều chi nhánh, kho, hoa hồng | Đề xuất, cần chốt riêng |
+| Phiên bản | Mục tiêu | Chức năng và kỹ thuật | Điều kiện kiểm tra | Trạng thái |
+|---|---|---|---|---|
+| v1.0.0 | Vận hành quầy | Đơn, thu tiền, in, báo cáo, Auth/RLS | Luồng bán hàng online | Đã kế thừa |
+| v1.1.0 | Đối soát | Ca, hoàn tiền, thu ròng | Tổng tiền đúng và phân quyền | Đã kế thừa |
+| v1.2.0–v1.2.2 | Lịch và giao diện | Phân thợ, trùng có xác nhận, bộ màu tại Cài đặt, thông báo thiếu ca | Giữ dữ liệu cũ, quyền và chống trùng | Đã kế thừa |
+| v1.3.0 | Nháp offline | IndexedDB, cache shell công khai, RPC sync có operation ID, kiểm tra giá/quyền | Nháp khôi phục, sync lại không thêm đơn; xử lý giá đổi | Source/build/tests hoàn thành; thiết bị/Supabase hosted cần nghiệm thu |
+| v2.0.0 | Mở rộng theo nhu cầu | Chi nhánh, kho, hoa hồng; migration riêng theo module | Chốt module và nghiệp vụ trước | Đề xuất, chưa triển khai |
 
-Nâng cấp tiếp từ ZIP mới nhất, tạo migration tăng dần, giữ lịch sử giao dịch.
+Không đồng bộ nền khi app đóng, không thu tiền offline. Gửi ZIP mới nhất để tiếp tục. v2.0.0 là đề xuất từ roadmap trước; cần Sếp chốt phạm vi, không tự coi là cam kết triển khai tất cả.

@@ -1,3 +1,7 @@
+# v1.3.0
+
+Nháp IndexedDB, public offline shell, hàng đợi có chủ động xác nhận, tự gửi khi mạng trở lại trong trang mở. Mã operation cố định chống trùng, sync khách/đơn nguyên tử; giá/dịch vụ/quyền kiểm tra lại, chặn sai tài khoản. Không thu tiền offline. Word/roadmap cập nhật, dependency runtime giữ nguyên theo lockfile nền tảng.
+
 # v1.2.2
 
 Hiển thị lỗi chưa mở ca, quyền và migration thay thông báo chung. Thêm đường dẫn mở ca, giữ kiểm tra giao dịch nguyên tử và chống trùng.
