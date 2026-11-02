@@ -1,3 +1,7 @@
+# v1.2.2
+
+Hiển thị lỗi chưa mở ca, quyền và migration thay thông báo chung. Thêm đường dẫn mở ca, giữ kiểm tra giao dịch nguyên tử và chống trùng.
+
 # v1.2.1
 
 Chuyển cấu hình giao diện vào Cài đặt, thay màu accent đơn lẻ bằng bộ màu toàn ứng dụng. Thêm sidebar/gradient/nền trang/nền thẻ/nút, mẫu màu và HEX, xem trước và hủy. RPC xác minh owner, validates colors và ghi nhật ký. Migration giữ màu cũ, không sửa giao dịch. Hướng dẫn Word cập nhật.

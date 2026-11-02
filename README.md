@@ -1,3 +1,7 @@
+# Salon Manager v1.2.2
+
+Đọc PAYMENT_FIX.md trước: sửa thông báo thiếu ca và lỗi cấu trúc database. Không có migration mới từ v1.2.1.
+
 # Salon Manager v1.2.1
 
 Bản sửa giao diện theo yêu cầu: cấu hình nằm trong Cài đặt → Tùy chỉnh giao diện. Màu sidebar, gradient hai màu, nền toàn trang, nền thẻ, màu nút; xem trước toàn ứng dụng, lưu cho cả salon, hủy và mặc định. Chỉ chủ salon được lưu. Bỏ ô đổi màu khỏi lịch hẹn.
