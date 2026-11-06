@@ -1,3 +1,11 @@
+# Salon Manager v1.3.1
+
+Bản sửa danh mục offline: đọc bản đã lưu trước, không tự tải lại khi khởi động hoặc đồng bộ hàng đợi. Chỉ nút Đồng bộ danh mục khi có thay đổi tải danh mục từ server. Xác thực tài khoản tách riêng, không làm mất danh mục khi hết phiên/mất mạng. Cache theo user/salon, tái sử dụng dữ liệu v1.3.0. Server trả danh mục rỗng cần xác nhận trước khi thay cache đang có dịch vụ.
+
+Nâng từ v1.3.0: deploy source, không chạy SQL mới, không xóa bộ nhớ trình duyệt. Mở trang nháp online để service worker nhận phiên bản v131 rồi kiểm tra offline. Danh mục không hết hạn theo thời gian; browser/device vẫn có thể xóa dữ liệu nên không cam kết tồn tại khi người dùng xóa site data, gỡ app hoặc trình duyệt thu hồi bộ nhớ.
+
+Hướng dẫn Word hiện tại trong ZIP. Các chỉ dẫn v1.3.0 bên dưới là nền tảng, ưu tiên hành vi cache nêu ở đầu tài liệu này.
+
 # Salon Manager v1.3.0
 
 ## Nháp offline và đồng bộ

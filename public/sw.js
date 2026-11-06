@@ -1,5 +1,5 @@
 // Online-only transactions. Never cache Auth, RSC, API responses, receipts or business records.
-const CACHE='salon-public-v13';
+const CACHE='salon-public-v131';
 const PUBLIC=['/drafts.html','/drafts.js','/drafts.css','/offline.html','/pwa-192.png','/pwa-512.png','/pwa-maskable.png'];
 self.addEventListener('install',event=>{event.waitUntil(caches.open(CACHE).then(c=>c.addAll(PUBLIC)).then(()=>self.skipWaiting()));});
 self.addEventListener('activate',event=>{event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k.startsWith('salon-public-')&&k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim()));});

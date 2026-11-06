@@ -1,7 +1,5 @@
-# Kiểm tra Salon Manager v1.3.0
+# Kiểm tra v1.3.1
 
-npm ci từ lockfile đạt. Production build đạt. 129 tests đạt theo Node test runner chạy tuần tự để giới hạn bộ nhớ PGlite. Có hồi quy Auth/RLS/đơn/ca/lịch/theme và kiểm tra sync offline: một mã gửi hai lần chỉ một order/operation, dùng khách đúng SĐT, giá thay đổi rollback, xác nhận giá mới, chặn actor khác.
+Build production đạt. Ba bài hồi quy mới chạy chính public/drafts.js trong Node VM với DOM và IndexedDB giả lập: hai lần mở app offline không gọi mạng và vẫn có lựa chọn Cắt tóc; sync chỉ gọi endpoint identity không tải lại catalog; lỗi mạng, catalog sai hoặc danh mục trống chưa xác nhận giữ bản cũ.
 
-node --check public/drafts.js đạt. Word render kiểm tra bố cục. Không thay hoặc bỏ test nghiệp vụ cũ; bộ test offline chạy thêm migration mới trên database thử trong bộ nhớ.
-
-Giới hạn: chưa kiểm tra IndexedDB/service worker/online event trên thiết bị thực tế; chưa UI end-to-end hoặc nhiều kết nối đồng thời trên Supabase hosted. Chưa deploy hoặc push. Kiểm tra mất mạng/đóng mở/giá thay đổi/tài khoản khác theo Word trước khi dùng kinh doanh. Giao dịch tiền vẫn online.
+Đây là kiểm tra mô phỏng vòng đời trang/bộ nhớ, không thay cho thử IndexedDB thật, PWA và thu hồi bộ nhớ trên thiết bị của Sếp. Bộ 129 tests nền tảng v1.3.0 đã đạt ở bản trước; không tuyên bố chạy lại toàn bộ cho patch. Không có migration mới. Word đã render kiểm tra bố cục. Chưa deploy/xác minh trên tài khoản Supabase thật.

@@ -1,3 +1,7 @@
+# v1.3.1
+
+Tách kiểm tra identity khỏi tải danh mục, cache lưu lâu dài theo user/salon, xác nhận danh mục rỗng, giữ cache khi mạng lỗi hoặc phiên hết hạn. Service worker mới v131 cập nhật HTML/JS. Không đổi database.
+
 # v1.3.0
 
 Nháp IndexedDB, public offline shell, hàng đợi có chủ động xác nhận, tự gửi khi mạng trở lại trong trang mở. Mã operation cố định chống trùng, sync khách/đơn nguyên tử; giá/dịch vụ/quyền kiểm tra lại, chặn sai tài khoản. Không thu tiền offline. Word/roadmap cập nhật, dependency runtime giữ nguyên theo lockfile nền tảng.
