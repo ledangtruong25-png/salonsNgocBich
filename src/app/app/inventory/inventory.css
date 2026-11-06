@@ -1,0 +1,13 @@
+.inventory { width: min(1100px, 100%); }
+.inventory h1 { margin: 24px 0 16px; }
+.inventory-nav { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-block: 12px; }
+.inventory-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(min(100%, 285px),1fr)); gap: 12px; }
+.inventory-grid article, .inventory-panel { border: 1px solid var(--border,#dce3df); border-radius: 12px; padding: 16px; }
+.inventory-panel { margin-block: 12px; }
+.inventory summary { cursor: pointer; padding-block: 8px; }
+.inventory-low { color: #a23f16; font-weight: 650; }
+.inventory-form fieldset { display: grid; gap: 10px; padding: 0; margin: 8px 0; border: 0; min-inline-size: 0; }
+.inventory-form label { display: grid; gap: 4px; }
+.inventory-table { overflow-x: auto; }
+.inventory-table table { width: 100%; border-collapse: collapse; }
+.inventory-table :is(th,td) { text-align: left; padding: 8px; border-bottom: 1px solid var(--border,#dce3df); }

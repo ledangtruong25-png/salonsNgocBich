@@ -1,3 +1,9 @@
+## v1.4.0 — Kho vật tư và định mức dịch vụ
+
+- Trang kho riêng cho chủ salon, có phân trang, nhập kho, kiểm kê, lịch sử và cảnh báo tồn thấp hoặc âm.
+- Định mức theo dịch vụ và vật tư. Tiêu hao gắn với thanh toán trong cùng giao dịch SQL.
+- Migration bổ sung `202611060007_inventory.sql`. Giữ dữ liệu và danh mục offline của các phiên bản trước.
+
 # v1.3.1
 
 Tách kiểm tra identity khỏi tải danh mục, cache lưu lâu dài theo user/salon, xác nhận danh mục rỗng, giữ cache khi mạng lỗi hoặc phiên hết hạn. Service worker mới v131 cập nhật HTML/JS. Không đổi database.

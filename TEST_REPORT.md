@@ -1,5 +1,8 @@
-# Kiểm tra v1.3.1
+# Kiểm tra Salon Manager v1.4.0
 
-Build production đạt. Ba bài hồi quy mới chạy chính public/drafts.js trong Node VM với DOM và IndexedDB giả lập: hai lần mở app offline không gọi mạng và vẫn có lựa chọn Cắt tóc; sync chỉ gọi endpoint identity không tải lại catalog; lỗi mạng, catalog sai hoặc danh mục trống chưa xác nhận giữ bản cũ.
-
-Đây là kiểm tra mô phỏng vòng đời trang/bộ nhớ, không thay cho thử IndexedDB thật, PWA và thu hồi bộ nhớ trên thiết bị của Sếp. Bộ 129 tests nền tảng v1.3.0 đã đạt ở bản trước; không tuyên bố chạy lại toàn bộ cho patch. Không có migration mới. Word đã render kiểm tra bố cục. Chưa deploy/xác minh trên tài khoản Supabase thật.
+- Node 24.22.1. `npm run check` đã qua kiểm tra kiểu, 136/136 bài test và build Next.js production.
+- PGlite chạy đủ bảy migration theo thứ tự trên dữ liệu mẫu. Kiểm tra kho qua RPC thật trong PostgreSQL, gồm nhập, kiểm kê cũ, gửi lại phiếu, RLS, phân quyền, thanh toán lỗi, trừ gộp nhiều dịch vụ, gửi lại thanh toán và hoàn tiền.
+- Nháp offline tạo đơn đúng một lần và chỉ phát sinh tiêu hao khi thanh toán. Bộ kiểm thử cache danh mục và các nghiệp vụ trước đó cũng đạt.
+- Hướng dẫn Word đã render và kiểm tra đủ hai trang.
+- Trang kho lấy tối đa 31 dòng mỗi truy vấn danh sách. Màn quầy không tải dữ liệu kho và thanh toán vẫn dùng RPC hiện có. Chưa đo độ trễ trên Supabase/Vercel thật, chưa nghiệm thu giao diện đăng nhập trên dữ liệu của salon.
+- Chưa push GitHub, deploy Vercel hoặc chạy migration trên Supabase của salon.

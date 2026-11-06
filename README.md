@@ -1,3 +1,29 @@
+# Salon Manager v1.4.0 — Kho vật tư và định mức dịch vụ
+
+## Nâng cấp từ v1.3.1
+
+1. Sao lưu Supabase và giữ ZIP đang vận hành. Thử trên project kiểm thử trước.
+2. Kiểm tra `select version from public.app_migrations order by applied_at;`. Nếu đã có `1.3.0` thì giữ nguyên migration nháp đã chạy. v1.3.1 là bản cập nhật ứng dụng, không có marker SQL riêng.
+3. Chạy **một lần** `supabase/migrations/202611060007_inventory.sql` trên cùng database. Migration tự ghi marker `1.4.0` sau khi thành công. Nếu marker đã có, bỏ qua bước chạy SQL.
+4. Giữ biến môi trường và Node 24. Chạy `npm ci` và `npm run check` rồi triển khai source trên Vercel.
+5. Đăng nhập chủ salon, mở **Kho vật tư**, tạo vật tư, ghi tồn đầu và khai báo định mức. Mở ca và thanh toán một đơn thử trong môi trường thử. Đối chiếu tồn và lịch sử.
+6. Cài mới thì chạy đủ bảy file trong `supabase/migrations` theo thứ tự tên, cấu hình Auth và tài khoản theo phần nền tảng. Tài liệu vận hành là `HUONG_DAN_SU_DUNG.docx`.
+
+## Nghiệp vụ kho
+
+- Chủ salon tạo vật tư, đổi tên và ngưỡng, nhập kho, kiểm kê và xem lịch sử. Đơn vị được cố định khi tạo. Số lượng hỗ trợ tối đa ba chữ số thập phân.
+- Định mức quản lý theo cặp vật tư và dịch vụ/biến thể. Giá trị 0 xóa định mức. Định mức tại thời điểm thu tiền áp dụng cho cả đơn đang phục vụ.
+- Thanh toán thành công mới ghi tiêu hao. Trừ theo tổng định mức nhân số lượt. Tồn có thể âm để quầy tiếp tục thu tiền. Hoàn tiền không tự hoàn vật tư đã dùng. Nếu vật tư thật sự nhập lại, chủ salon lập phiếu nhập kèm lý do.
+- Nháp, đồng bộ nháp, đơn hủy và đơn đã thanh toán trước khi cài migration không sinh giao dịch kho. Bắt đầu từ tồn thực tế tại thời điểm chuyển đổi.
+- Nhập/kiểm kê chống ghi lặp khi gửi lại cùng biểu mẫu. Nếu mất phản hồi, kiểm tra lịch sử trước khi mở phiếu mới. Nếu kiểm kê báo tồn thay đổi, mở lại vật tư, kiểm đếm lại và lưu.
+- Chủ salon mới đọc và ghi dữ liệu kho. Thu ngân thanh toán như cũ, còn việc ghi tiêu hao chạy trong PostgreSQL. Mỗi lần thanh toán thêm duy nhất một giao dịch tiêu hao cho mỗi vật tư liên quan.
+
+## Hiệu năng
+
+Màn quầy không tải dữ liệu kho và không prefetch trang kho. Danh sách vật tư, dịch vụ và lịch sử lấy theo trang 30 dòng, với một dòng kiểm tra còn trang kế. Chỉ truy vấn dữ liệu của tab đang mở. Có index theo salon và thứ tự danh sách, theo đơn và theo cặp dịch vụ/vật tư. Thanh toán không thêm lượt gọi mạng từ quầy. PostgreSQL cộng dồn theo vật tư rồi cập nhật với thứ tự khóa cố định để giảm tranh chấp khóa.
+
+Các mục dưới đây ghi lại cách vận hành phiên bản trước. Ưu tiên quy trình nâng cấp ở đầu tài liệu.
+
 # Salon Manager v1.3.1
 
 Bản sửa danh mục offline: đọc bản đã lưu trước, không tự tải lại khi khởi động hoặc đồng bộ hàng đợi. Chỉ nút Đồng bộ danh mục khi có thay đổi tải danh mục từ server. Xác thực tài khoản tách riêng, không làm mất danh mục khi hết phiên/mất mạng. Cache theo user/salon, tái sử dụng dữ liệu v1.3.0. Server trả danh mục rỗng cần xác nhận trước khi thay cache đang có dịch vụ.
@@ -328,3 +354,7 @@ Báo cáo dùng `paid_at` do server ghi lúc xác nhận nhận tiền, không d
 Bản kế tiếp **v1.1.0 — đối soát**: hoàn tiền có quyền, mở/đóng ca, tiền thu ròng và truy vết; chưa triển khai trong ZIP này. Gửi ZIP v1.0.0 mới nhất và yêu cầu “Dùng HV-App, xây dựng phiên bản tiếp theo”. Không gửi mật khẩu, .env.local hay dữ liệu khách thật.
 
 Tài liệu kỹ thuật: [Supabase functions](https://supabase.com/docs/guides/database/functions), [RLS](https://supabase.com/docs/guides/database/postgres/row-level-security), [SSR](https://supabase.com/docs/guides/auth/server-side/creating-a-client), [Next PWA](https://nextjs.org/docs/app/guides/progressive-web-apps), [Vercel Next](https://vercel.com/docs/frameworks/full-stack/nextjs), [Vercel Git](https://vercel.com/docs/git).
+
+## Quay lại sau nâng cấp v1.4.0
+
+Nếu cần quay lại toàn bộ trạng thái trước nâng cấp, lưu riêng các giao dịch đã phát sinh và đối chiếu trước khi khôi phục bản sao lưu. Nếu chỉ quay lại source cũ trong khi giữ database mới, trigger tiêu hao vẫn hoạt động và trang kho chưa có trong giao diện cũ. Giữ lịch sử kho để đối chiếu khi đưa source mới trở lại.
