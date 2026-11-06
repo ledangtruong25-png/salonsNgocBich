@@ -1,3 +1,9 @@
+## v1.5.0 — Hoa hồng thợ
+
+- Tỷ lệ hoa hồng theo dịch vụ hoặc biến thể, gán thợ từng dòng khi thanh toán và mặc định theo lịch hẹn.
+- Ghi hoa hồng sau giảm giá, điều chỉnh theo số tiền hoàn và báo cáo theo khoảng ngày.
+- Migration bổ sung `202611060008_commissions.sql`, mặc định tỷ lệ 0% và không tính hồi tố.
+
 ## v1.4.0 — Kho vật tư và định mức dịch vụ
 
 - Trang kho riêng cho chủ salon, có phân trang, nhập kho, kiểm kê, lịch sử và cảnh báo tồn thấp hoặc âm.

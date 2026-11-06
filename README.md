@@ -1,3 +1,28 @@
+# Salon Manager v1.5.0 — Hoa hồng thợ theo dịch vụ
+
+## Nâng cấp từ v1.4.0
+
+1. Sao lưu Supabase và lưu ZIP hiện tại. Kiểm tra mốc bằng `select version from public.app_migrations order by applied_at;`.
+2. Khi đã có mốc `1.4.0` và chưa có `1.5.0`, chạy một lần `supabase/migrations/202611060008_commissions.sql`. Kiểm tra mốc `1.5.0` trước khi deploy. Nếu cài mới, chạy đủ tám migrations theo thứ tự tên.
+3. Giữ cấu hình Supabase, APP_URL và Node 24. Chạy `npm ci` và `npm run check`, sau đó deploy lên Vercel.
+4. Chủ salon vào **Hoa hồng thợ → Cấu hình tỷ lệ dịch vụ**. Thiết lập tỷ lệ cho từng dịch vụ hoặc biến thể rồi chạy một đơn thử. Hướng dẫn thao tác trong `HUONG_DAN_SU_DUNG.docx`.
+
+## Cách tính và đối soát
+
+- Tỷ lệ 0–100%, tối đa hai chữ số thập phân. Mặc định 0%. Tỷ lệ tại lúc thanh toán được lưu riêng cho từng dòng.
+- Mỗi dòng dịch vụ gắn một thợ cho toàn bộ số lượt của dòng. Đơn từ lịch hẹn mặc định dùng thợ của lịch. Thu ngân có thể mở mục Thợ thực hiện theo dịch vụ để đổi thợ, gán thợ cho khách đến trực tiếp hoặc chọn không ghi hoa hồng cho dòng đó.
+- Giá trị thực thu được phân bổ theo tỷ trọng thành tiền dòng, dùng chênh lệch lũy kế sau làm tròn để tổng cơ sở tính bằng tổng tiền đơn. Hoa hồng từng dòng được làm tròn đến đồng.
+- Hoàn tiền giảm hoa hồng theo tỷ lệ hoàn trên tổng tiền đã thu. Tính phần chênh lệch lũy kế trên từng dòng để hoàn đủ sẽ đảo đúng toàn bộ hoa hồng. Khoản giảm ghi vào kỳ của ngày hoàn tiền. Lịch sử ghi tên dịch vụ, tên thợ và tỷ lệ tại lúc thu tiền. Tổng hợp nhóm theo mã thợ và hiển thị tên hiện tại.
+- Chủ salon chọn ngày bắt đầu và kết thúc theo giờ Việt Nam, xem phát sinh, giảm do hoàn và còn lại theo thợ, cùng chi tiết thanh toán và hoàn tiền. Đây là báo cáo đối soát, chưa có thao tác khóa kỳ hoặc ghi nhận trả hoa hồng.
+- Đơn đã thu trước migration không tính hồi tố. Nháp offline và đơn chưa thu không phát sinh hoa hồng. Kho vẫn tự ghi theo quy tắc v1.4.0.
+- Trang quầy không truy vấn sổ hoa hồng. Danh sách thợ chỉ tải khi mở phần gán thợ. Tỷ lệ và chi tiết kỳ tải theo trang 30 dòng, tổng hợp trên PostgreSQL. Không có lượt gọi mạng riêng để ghi hoa hồng khi thu tiền.
+
+## Quay lại
+
+Giữ migration và dữ liệu khi cần quay lại source v1.4.0 tạm thời. Trigger vẫn áp dụng thợ từ lịch hẹn, nhưng giao diện cũ thiếu thao tác gán thợ theo dòng. Nếu cần quay lại cả dữ liệu, đối chiếu và lưu riêng giao dịch mới trước khi phục hồi bản sao lưu.
+
+Phần bên dưới là tài liệu nền tảng và lịch sử nâng cấp.
+
 # Salon Manager v1.4.0 — Kho vật tư và định mức dịch vụ
 
 ## Nâng cấp từ v1.3.1

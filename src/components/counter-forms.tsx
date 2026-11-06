@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import type { Customer, OrderDetail, Service } from '@/lib/types';
-import { listCustomers, saveCustomer, saveService, saveOrder, payOrder, cancelOrder } from '@/app/counter-actions';
+import { listCustomers, saveCustomer, saveService, saveOrder, payOrder, cancelOrder, listPaymentStylists } from '@/app/counter-actions';
 import { money } from '@/lib/domain';
 import { fromLocalInput, quote, toLocalInput } from '@/lib/sales';
 type Props={demo:boolean;online:boolean;onDone:(id:string)=>void};
@@ -41,8 +41,31 @@ export function OrderForm({initial,customers,services,...p}:Props&{initial?:Orde
 }
 export function PaymentForm({order,...p}:Props&{order:OrderDetail}) {
  const [request]=useState(()=>crypto.randomUUID()),[method,setMethod]=useState<'cash'|'transfer'>('cash'),[tendered,setTendered]=useState(order.total),[checkOut,setCheckOut]=useState(toLocalInput(order.check_out||new Date().toISOString())),[confirmed,setConfirmed]=useState(false),[busy,setBusy]=useState(false),[error,setError]=useState('');
- return <form className="counter-form" onSubmit={async e=>{e.preventDefault();if(busy||!confirmed)return;setBusy(true);setError('');try{const r=await payOrder({id:order.id,revision:order.revision,request,method,tendered:method==='cash'?tendered:order.total,checkOut:fromLocalInput(checkOut)});if(r.error)setError(r.error);else p.onDone(order.id);}catch{setError(networkError);}finally{setBusy(false);}}}>
- <div className="payment-total"><span>Khách cần thanh toán</span><strong>{money(order.total)}</strong></div><label>Phương thức<select value={method} onChange={e=>{setMethod(e.target.value as 'cash'|'transfer');setConfirmed(false);}}><option value="cash">Tiền mặt</option><option value="transfer">Chuyển khoản</option></select></label><label>Giờ ra *<input type="datetime-local" required min={toLocalInput(order.check_in)} value={checkOut} onChange={e=>setCheckOut(e.target.value)}/></label>{method==='cash'?<><label>Tiền khách đưa (VND)<input type="number" required min={order.total} max={1000000000} step={1} value={tendered} onChange={e=>setTendered(Number(e.target.value))}/></label><p>Tiền trả khách: <strong>{money(Math.max(0,tendered-order.total))}</strong></p></>:<div className="notice">Thu ngân kiểm tra tiền đã vào tài khoản rồi mới xác nhận. App ghi nhận thủ công, chưa có kết nối ngân hàng.</div>}<label className="check-label"><input type="checkbox" required checked={confirmed} onChange={e=>setConfirmed(e.target.checked)}/>Tôi xác nhận đã nhận đủ tiền. Đơn sẽ khóa sau thanh toán.</label><Feedback error={error}/>{error.includes('mở ca')&&<Link className="button" target="_blank" href="/app/reconciliation">Mở ca thu ngân trong cửa sổ mới</Link>}<button className="button primary" disabled={busy||p.demo||!p.online||!confirmed}>{busy?'Đang ghi nhận…':'Xác nhận thanh toán'}</button></form>;
+ const [stylists,setStylists]=useState<{id:string;name:string}[]|null>(null);
+ const [loadingStylists,setLoadingStylists]=useState(false),[stylistError,setStylistError]=useState('');
+ const [assignments,setAssignments]=useState<Record<string,string|null>>({});
+ async function loadStylists(){
+  if(stylists||loadingStylists||p.demo||!p.online)return;
+  setLoadingStylists(true);setStylistError('');
+  try{const result=await listPaymentStylists();if(result.error)setStylistError(result.error);else setStylists(result.data!);}
+  catch{setStylistError(networkError);}
+  finally{setLoadingStylists(false);}
+ }
+ return <form className="counter-form" onSubmit={async e=>{e.preventDefault();if(busy||!confirmed)return;setBusy(true);setError('');try{const r=await payOrder({id:order.id,revision:order.revision,request,method,tendered:method==='cash'?tendered:order.total,checkOut:fromLocalInput(checkOut),assignments});if(r.error)setError(r.error);else p.onDone(order.id);}catch{setError(networkError);}finally{setBusy(false);}}}>
+ <div className="payment-total"><span>Khách cần thanh toán</span><strong>{money(order.total)}</strong></div><label>Phương thức<select value={method} onChange={e=>{setMethod(e.target.value as 'cash'|'transfer');setConfirmed(false);}}><option value="cash">Tiền mặt</option><option value="transfer">Chuyển khoản</option></select></label><label>Giờ ra *<input type="datetime-local" required min={toLocalInput(order.check_in)} value={checkOut} onChange={e=>setCheckOut(e.target.value)}/></label>{method==='cash'?<><label>Tiền khách đưa (VND)<input type="number" required min={order.total} max={1000000000} step={1} value={tendered} onChange={e=>setTendered(Number(e.target.value))}/></label><p>Tiền trả khách: <strong>{money(Math.max(0,tendered-order.total))}</strong></p></>:<div className="notice">Thu ngân kiểm tra tiền đã vào tài khoản rồi mới xác nhận. App ghi nhận thủ công, chưa có kết nối ngân hàng.</div>}<details onToggle={event=>{if(event.currentTarget.open)void loadStylists();}}>
+ <summary>Thợ thực hiện theo dịch vụ</summary>
+ <p className="small muted">Mặc định dùng thợ của lịch hẹn nếu có. Với khách đến trực tiếp, chọn thợ để ghi hoa hồng.</p>
+ {loadingStylists&&<p role="status">Đang tải danh sách thợ…</p>}
+ {stylistError&&<><Feedback error={stylistError}/><button type="button" className="button" onClick={loadStylists}>Tải lại danh sách thợ</button></>}
+ {stylists?.length===0&&<p>Chưa có thợ đang hoạt động. Chủ salon có thể thêm trong Lịch hẹn và phân thợ.</p>}
+ {stylists&&order.items.map(item=><label key={item.id}>{item.name} {item.variant}
+  <select disabled={busy} value={Object.hasOwn(assignments,item.id)?assignments[item.id]??'none':''} onChange={event=>{
+   const value=event.target.value;
+   setAssignments(current=>{const next={...current};if(value)next[item.id]=value==='none'?null:value;else delete next[item.id];return next;});
+   setConfirmed(false);
+  }}><option value="">Theo lịch hẹn nếu có</option><option value="none">Không ghi hoa hồng</option>
+  {stylists.map(stylist=><option key={stylist.id} value={stylist.id}>{stylist.name}</option>)}</select></label>)}
+ </details><label className="check-label"><input type="checkbox" required checked={confirmed} onChange={e=>setConfirmed(e.target.checked)}/>Tôi xác nhận đã nhận đủ tiền. Đơn sẽ khóa sau thanh toán.</label><Feedback error={error}/>{error.includes('mở ca')&&<Link className="button" target="_blank" href="/app/reconciliation">Mở ca thu ngân trong cửa sổ mới</Link>}<button className="button primary" disabled={busy||p.demo||!p.online||!confirmed}>{busy?'Đang ghi nhận…':'Xác nhận thanh toán'}</button></form>;
 }
 export function CancelForm({order,...p}:Props&{order:OrderDetail}) {const [busy,setBusy]=useState(false),[error,setError]=useState('');return <form className="counter-form" onSubmit={async e=>{e.preventDefault();if(busy)return;const f=new FormData(e.currentTarget);setBusy(true);try{const r=await cancelOrder(order.id,order.revision,String(f.get('reason')));if(r.error)setError(r.error);else p.onDone(order.id);}catch{setError(networkError);}finally{setBusy(false);}}}><p>Hủy đơn của <strong>{order.customer_name}</strong> — {money(order.total)}. Đơn hủy không ghi doanh thu.</p><label>Lý do hủy *<input name="reason" required minLength={3} maxLength={250} autoFocus/></label><Feedback error={error}/><button className="button danger-button" disabled={busy||p.demo||!p.online}>{busy?'Đang hủy…':'Xác nhận hủy đơn'}</button></form>;}
 export function Feedback({error}:{error:string}) {return error?<div className="notice danger" role="alert">{error}</div>:null;}
